@@ -1,0 +1,19 @@
+hydra:
+  output_subdir: null
+
+save_model_path: model_weights/model_weights.pt
+
+dataset:
+  root: ../data # for GCP - use "data/""
+  dataset: Flowers102 # for VAE purposes FashionMNIST or Flowers102
+
+train:
+  epochs: 10
+  lr: 0.005
+  weight_decay: 5e-3
+
+
+model:
+  projections: 768
+show_model_summary: True
+num_classes : 20
