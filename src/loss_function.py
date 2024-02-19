@@ -1,14 +1,18 @@
 import torch
 import numpy as np
 from src.model import CLIP
-from torch.nn import CrossEntropyLoss
+from torch.nn import CrossEntropyLoss, LogSoftmax
+from torch.nn import functional as F
 
 def symmetric_loss(logits):
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     labels = torch.arange(logits.shape[0])
+    labels = labels.to(device)
     loss = CrossEntropyLoss()
     loss_i = loss(logits, labels)
     loss_t = loss(logits.T, labels)
-    return (loss_i + loss_t) / 2.0
+    loss = (loss_i + loss_t) / 2.0
+    return loss
 
 
 if __name__ == "__main__":

@@ -27,8 +27,6 @@ class Projection(nn.Module):
 
         return out
     
-
-
 class ImageEncoder(nn.Module):
     """
     takes in 224x224x3 image and outputs 768 dim vector. Uses the VIT based model as trained for CLIP by OpenAI
@@ -80,7 +78,7 @@ class CLIP(nn.Module):
         txt_emb = self.projection(txt_features)
 
         img_norm, txt_norm = get_norm_embedding(img_emb, txt_emb)
-        logits = (img_norm @ txt_norm.T) / torch.exp(self.temperature)
+        logits = (img_norm @ txt_norm.T) / torch.sigmoid(self.temperature)
         
         return img_emb, txt_emb, logits
 

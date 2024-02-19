@@ -124,6 +124,33 @@ class UnsplashDataset(Dataset):
 
         return image, label
 
+class FlickrDataset(Dataset):
+    def __init__(self, image_folder_path, caption_path):
+        self.image_folder_path = image_folder_path
+
+        self.transform = transforms.Compose([transforms.ToTensor(), 
+                                             transforms.Resize((512,512))
+                                             ])
+        self.captions = pd.read_csv(caption_path, sep=',', header=0)
+
+    def __len__(self):
+        return self.captions.shape[0]
+
+    def __getitem__(self, idx):
+        img_name = os.path.join(self.image_folder_path, self.captions.iloc[idx, 0])
+
+        image = Image.open(img_name)
+        label = self.captions.iloc[idx, 1]
+
+        image = self.transform(image)
+
+        # somehow the transforms does not resize
+        image = transforms.functional.resize(image, (224, 224))
+
+        return image, label
+
+
+
 if __name__ == "__main__":
     # train, test = get_load_data(root = "../data")
     # img, label = train[1]

@@ -22,3 +22,5 @@ jupyterlab==3.2.1
 notebook 
 pillow == 10.1.0
 jupyter == 1.0.0
+timm == 0.9.12
+transformers==4.37.2

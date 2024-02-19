@@ -4,14 +4,15 @@
 Just a simple implementation based on the CLIP which seems to be an important thing especially when we talk about generative AI, and zero-shot learning 
 
 ## What has been done 
-
-
-## What else needs to be done
 1. Set up the Architecture
 1. Set up loss function
 1. Set up the dataset and dataloader 
 1. Set up the training, which could be better implemented admittedly.
 1. Set up validation to get validation loss.
+
+## What else needs to be done
+
+1. Inference Pipeline (encode and embeddings)
 1. Results visualisation
 
 ## How to run 

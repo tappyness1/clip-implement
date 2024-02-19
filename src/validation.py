@@ -4,10 +4,10 @@ from tqdm import tqdm
 from torch.utils.data import DataLoader
 from sklearn.metrics import confusion_matrix, f1_score
 import pandas as pd
-from src.loss_function import elbo_loss
+from src.loss_function import symmetric_loss
 from sklearn.metrics import confusion_matrix
 
-def validation(model, val_set, cfg_obj):
+def validation(model, val_set, tokenizer, cfg_obj):
     """Simple validation workflow. Current implementation is for F1 score
 
     Args:
@@ -20,8 +20,6 @@ def validation(model, val_set, cfg_obj):
     model.eval()
     val_dataloader = DataLoader(val_set, batch_size=5, shuffle = True)
 
-    dataset = cfg_obj['dataset']['dataset']
-
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     model = model.to(device)
@@ -30,12 +28,14 @@ def validation(model, val_set, cfg_obj):
 
     with tqdm(val_dataloader) as tepoch:
 
-        for imgs, _ in tepoch:
+        for imgs, labels in tepoch:
+            
+            labels = tokenizer(labels, padding=True, truncation=True, max_length = 76, return_tensors="pt")
+            labels = labels.to(device)
             imgs = imgs.to(device)
-            with torch.no_grad():
-                mean, log_var, z, decoded = model(imgs)
-
-            loss = elbo_loss(mean, log_var, z, model.log_scale, decoded, dataset, imgs)  
+            
+            _, _, logits = model(imgs, labels)
+            loss = symmetric_loss(logits)
             tepoch.set_postfix(loss=loss.item())  
             losses.append(loss.item())
 
@@ -50,9 +50,10 @@ if __name__ == "__main__":
 
 
     cfg = {"save_model_path": "model_weights/model_weights.pt",
-           'show_model_summary': True, 
-           'train': {"epochs": 1, 'lr': 0.005, 'weight_decay': 5e-3},
-           'dataset': {"dataset": "Flowers102"}}
+           'show_model_summary': False, 
+           'train': {"epochs": 3, 'lr': 5e-5, 'weight_decay': 0.2, "batch_size": 16},
+           'dataset': {"dataset": "unsplash"},
+           'model':{"projections": 768}}
     
     _, val_set = get_load_data(root = "../data", dataset = cfg['dataset']['dataset'])
 
