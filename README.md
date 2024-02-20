@@ -17,15 +17,18 @@ Just a simple implementation based on the CLIP which seems to be an important th
 
 ## How to run 
 
-Make sure you change the directory of your data. I used Unsplashed dataset - https://github.com/unsplash/datasets/tree/master
+Make sure you change the directory of your data. I used Flickr dataset - 
 ```
 python -m src.main
 ```
 
 ## Visualisation
-Go to ./notebooks/model_out.ipynb to see how the model turned out.  
+
 
 ## Resources
 
 ### From scratch implementation
+
+https://github.com/moein-shariatnia/OpenAI-CLIP/blob/master/modules.py - when the CLIP implementation by OPENAI didn't make sense to me, I looked at this
+https://github.com/openai/CLIP/blob/main/clip/model.py - the original. Quite hard to read honestly.
 

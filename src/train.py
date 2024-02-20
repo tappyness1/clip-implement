@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
     cfg = {"save_model_path": "model_weights/model_weights.pt",
            'show_model_summary': False, 
-           'train': {"epochs": 3, 'lr': 5e-5, 'weight_decay': 0.2, "batch_size": 16},
+           'train': {"epochs": 10, 'lr': 5e-5, 'weight_decay': 0.2, "batch_size": 16, "subset": 500},
            'dataset': {"dataset": "unsplash"},
            'model':{"projections": 768}}
     # dataset = UnsplashDataset(tokenizer, "../data/unsplash/photos.tsv*")
