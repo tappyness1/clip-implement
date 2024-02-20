@@ -59,6 +59,14 @@ def train(train_set, val_set, cfg):
 
     return model
 
+def save_sets(dataset, train_set, val_set, test_set):
+    """
+    Save the train, val and test sets to csv files to reduce data leakage
+    """
+    dataset.captions.iloc[train_set.indices].to_csv("./data/train_set.csv", index_label = "index")
+    dataset.captions.iloc[val_set.indices].to_csv("./data/val_set.csv", index_label = "index")
+    dataset.captions.iloc[test_set.indices].to_csv("./data/test_set.csv", index_label = "index")
+
 if __name__ == "__main__":
 
     torch.manual_seed(42)
@@ -69,9 +77,9 @@ if __name__ == "__main__":
 
     cfg = {"save_model_path": "model_weights/model_weights.pt",
            'show_model_summary': False, 
-           'train': {"epochs": 10, 'lr': 5e-5, 
+           'train': {"epochs": 16, 'lr': 5e-5, 
                      'weight_decay': 0.2, "batch_size": 16, 
-                     "train_subset": 3200, "val_subset": 800},
+                     "train_subset": None, "val_subset": None},
            'dataset': {"dataset": "flickr"},
            'model':{"projections": 768}}
     
@@ -79,7 +87,7 @@ if __name__ == "__main__":
     dataset = FlickrDataset(image_folder_path = "../data/flickr-dataset/Images/", caption_path = "../data/flickr-dataset/captions.txt")
     dataset_len = len(dataset)
     train_set, val_set, test_set = torch.utils.data.random_split(dataset, lengths = [math.floor(dataset_len*0.8), math.ceil(dataset_len*0.1), math.floor(dataset_len*0.1)])
-
+    save_sets(dataset, train_set, val_set, test_set)
     train(train_set = train_set, val_set = val_set, cfg = cfg)
 
     # cannot use FashionMNIST because size needs to be 224x224x3 at the very least
