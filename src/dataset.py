@@ -146,9 +146,6 @@ class FlickrDataset(Dataset):
 
         # somehow the transforms does not resize
         image = transforms.functional.resize(image, (224, 224))
-        image *= 255
-        print (image[:,0,0])
-
         return image, label
 
 
