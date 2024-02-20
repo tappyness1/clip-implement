@@ -24,7 +24,6 @@ python -m src.main
 
 ## Visualisation
 
-
 ## Resources
 
 ### From scratch implementation

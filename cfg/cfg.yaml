@@ -11,9 +11,13 @@ train:
   epochs: 10
   lr: 0.005
   weight_decay: 5e-3
-
-
+  batch_size: 16
+  train_subset: 320
+  val_subset: 80
+  test_subset: 80
+  
 model:
   projections: 768
+
 show_model_summary: True
 num_classes : 20

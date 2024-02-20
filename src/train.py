@@ -24,8 +24,8 @@ def train(train_set, val_set, cfg):
     if cfg['show_model_summary']:
         summary(model, (3,224,224))
 
-    if cfg['train']['subset']:
-        subset_indices = torch.randperm(len(train_set))[:cfg['train']['subset']]
+    if cfg['train']['train_subset']:
+        subset_indices = torch.randperm(len(train_set))[:cfg['train']['train_subset']]
         train_set = Subset(train_set, subset_indices)
 
     train_dataloader = DataLoader(train_set, batch_size=cfg['train']['batch_size'], shuffle = True)
@@ -55,7 +55,7 @@ def train(train_set, val_set, cfg):
         model.train()
         
     print("training done")
-    torch.save(model, cfg['save_model_path'])
+    torch.save(model.state_dict(), cfg['save_model_path'])
 
     return model
 
@@ -69,9 +69,12 @@ if __name__ == "__main__":
 
     cfg = {"save_model_path": "model_weights/model_weights.pt",
            'show_model_summary': False, 
-           'train': {"epochs": 10, 'lr': 5e-5, 'weight_decay': 0.2, "batch_size": 16, "subset": 1000},
-           'dataset': {"dataset": "unsplash"},
+           'train': {"epochs": 10, 'lr': 5e-5, 
+                     'weight_decay': 0.2, "batch_size": 16, 
+                     "train_subset": 3200, "val_subset": 800},
+           'dataset': {"dataset": "flickr"},
            'model':{"projections": 768}}
+    
     # dataset = UnsplashDataset(tokenizer, "../data/unsplash/photos.tsv*")
     dataset = FlickrDataset(image_folder_path = "../data/flickr-dataset/Images/", caption_path = "../data/flickr-dataset/captions.txt")
     dataset_len = len(dataset)

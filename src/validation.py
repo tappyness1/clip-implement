@@ -19,8 +19,8 @@ def validation(model, val_set, tokenizer, cfg):
     """
     model.eval()
 
-    if cfg['train']['subset']:
-        subset_indices = torch.randperm(len(val_set))[:cfg['train']['subset']]
+    if cfg['train']['val_subset']:
+        subset_indices = torch.randperm(len(val_set))[:cfg['train']['val_subset']]
         val_set = Subset(val_set, subset_indices)
     val_dataloader = DataLoader(val_set, batch_size=cfg['train']['batch_size'], shuffle = True)
 
@@ -55,7 +55,9 @@ if __name__ == "__main__":
 
     cfg = {"save_model_path": "model_weights/model_weights.pt",
            'show_model_summary': False, 
-           'train': {"epochs": 3, 'lr': 5e-5, 'weight_decay': 0.2, "batch_size": 16},
+           'train': {"epochs": 10, 'lr': 5e-5, 
+                     'weight_decay': 0.2, "batch_size": 16, 
+                     "train_subset": 3200, "val_subset": 800},
            'dataset': {"dataset": "unsplash"},
            'model':{"projections": 768}}
     
