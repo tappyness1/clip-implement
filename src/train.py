@@ -75,13 +75,14 @@ if __name__ == "__main__":
     
     import math
 
-    cfg = {"save_model_path": "model_weights/model_weights.pt",
+    cfg = {"save_model_path": "model_weights/clip-epochs-10-partial-set.pt",
            'show_model_summary': False, 
-           'train': {"epochs": 16, 'lr': 5e-5, 
+           'train': {"epochs": 10, 'lr': 5e-5, 
                      'weight_decay': 0.2, "batch_size": 16, 
-                     "train_subset": None, "val_subset": None},
+                     "train_subset": 8000, "val_subset": 400},
            'dataset': {"dataset": "flickr"},
-           'model':{"projections": 768}}
+           'model':{"model_name": "clip", 
+                    "projections": 768}}
     
     # dataset = UnsplashDataset(tokenizer, "../data/unsplash/photos.tsv*")
     dataset = FlickrDataset(image_folder_path = "../data/flickr-dataset/Images/", caption_path = "../data/flickr-dataset/captions.txt")
