@@ -7,6 +7,7 @@ from torchsummary import summary
 from src.loss_function import symmetric_loss
 from transformers import DistilBertTokenizer
 from src.validation import validation 
+import os
 
 def train(train_set, val_set, cfg):
            
@@ -59,13 +60,14 @@ def train(train_set, val_set, cfg):
 
     return model
 
-def save_sets(dataset, train_set, val_set, test_set):
+def save_sets(dataset, train_set, val_set, test_set, save_path):
     """
     Save the train, val and test sets to csv files to reduce data leakage
     """
-    dataset.captions.iloc[train_set.indices].to_csv("./data/train_set.csv", index_label = "index")
-    dataset.captions.iloc[val_set.indices].to_csv("./data/val_set.csv", index_label = "index")
-    dataset.captions.iloc[test_set.indices].to_csv("./data/test_set.csv", index_label = "index")
+    
+    dataset.captions.iloc[train_set.indices].to_csv(os.path.join(save_path, "train_set.csv"), index_label = "index")
+    dataset.captions.iloc[val_set.indices].to_csv(os.path.join(save_path, "val_set.csv"), index_label = "index")
+    dataset.captions.iloc[test_set.indices].to_csv(os.path.join(save_path, "test_set.csv"), index_label = "index")
 
 if __name__ == "__main__":
 
@@ -79,7 +81,8 @@ if __name__ == "__main__":
            'show_model_summary': False, 
            'train': {"epochs": 10, 'lr': 5e-5, 
                      'weight_decay': 0.2, "batch_size": 16, 
-                     "train_subset": 8000, "val_subset": 400},
+                     "train_subset": 8000, "val_subset": 400,
+                     "save_sets": "./data"},
            'dataset': {"dataset": "flickr"},
            'model':{"model_name": "clip", 
                     "projections": 768}}
@@ -88,7 +91,7 @@ if __name__ == "__main__":
     dataset = FlickrDataset(image_folder_path = "../data/flickr-dataset/Images/", caption_path = "../data/flickr-dataset/captions.txt")
     dataset_len = len(dataset)
     train_set, val_set, test_set = torch.utils.data.random_split(dataset, lengths = [math.floor(dataset_len*0.8), math.ceil(dataset_len*0.1), math.floor(dataset_len*0.1)])
-    save_sets(dataset, train_set, val_set, test_set)
+    save_sets(dataset, train_set, val_set, test_set, save_path = cfg['train']['save_sets'])
     train(train_set = train_set, val_set = val_set, cfg = cfg)
 
     # cannot use FashionMNIST because size needs to be 224x224x3 at the very least
