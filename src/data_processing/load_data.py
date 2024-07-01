@@ -1,16 +1,14 @@
+import glob
+import os
+
 import numpy as np
 import pandas as pd
-import glob
-
-import os
+import requests
+import torchvision.transforms as transforms
+from PIL import Image
 from torch.utils.data import Dataset
 from torchvision.io import read_image
 
-from PIL import Image
-import requests
-import torchvision.transforms as transforms
-import requests 
-from PIL import Image 
 
 def get_photos_tsv(path):
     files = glob.glob(path)

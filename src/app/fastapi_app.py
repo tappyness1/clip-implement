@@ -1,18 +1,18 @@
+from io import BytesIO
+
+import cv2
 import hydra
-from omegaconf import DictConfig, OmegaConf
+import numpy as np
+import skimage
 import torch
 import torchvision.transforms as transforms
 import uvicorn
-from fastapi import FastAPI
-from src.predict import predict
-from fastapi import File
-from fastapi import UploadFile
 import yaml
-import numpy as np
-from io import BytesIO
+from fastapi import FastAPI, File, UploadFile
+from omegaconf import DictConfig, OmegaConf
 from PIL import Image
-import skimage
-import cv2
+
+from src.predict import predict
 
 
 def get_model():

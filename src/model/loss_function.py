@@ -1,8 +1,10 @@
-import torch
 import numpy as np
-from src.model import CLIP
+import torch
 from torch.nn import CrossEntropyLoss, LogSoftmax
 from torch.nn import functional as F
+
+from src.model import CLIP
+
 
 def symmetric_loss(logits):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -14,12 +16,12 @@ def symmetric_loss(logits):
     loss = (loss_i + loss_t) / 2.0
     return loss
 
-
 if __name__ == "__main__":
-    from src.model import CLIP
-    from src.dataset import UnsplashDataset
     from torch.utils.data import DataLoader
     from transformers import DistilBertTokenizer
+
+    from src.data_processing.dataset import UnsplashDataset
+    from src.model import CLIP
 
     tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
 
