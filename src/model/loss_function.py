@@ -3,7 +3,7 @@ import torch
 from torch.nn import CrossEntropyLoss, LogSoftmax
 from torch.nn import functional as F
 
-from src.model import CLIP
+from src.model.model import CLIP
 
 
 def symmetric_loss(logits):

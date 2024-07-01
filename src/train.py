@@ -46,8 +46,12 @@ def train(train_set, val_set, cfg):
         with tqdm(train_dataloader) as tepoch:
             for imgs, labels in tepoch:
 
-                labels = tokenizer(
-                    labels, padding=True, truncation=True, max_length=76, return_tensors="pt")
+                labels = tokenizer(labels,
+                                   padding=True,
+                                   truncation=True,
+                                   max_length=76,
+                                   return_tensors="pt")
+
                 labels = labels.to(device)
                 imgs = imgs.to(device)
 
@@ -88,7 +92,7 @@ if __name__ == "__main__":
 
     import math
 
-    from src.data_processing.dataset import FlickrDataset, UnsplashDataset
+    from src.data_processing.dataset import FlickrDataset
 
     cfg = {"save_model_path": "model_weights/clip-epochs-10-partial-set.pt",
            'show_model_summary': False,
@@ -101,13 +105,21 @@ if __name__ == "__main__":
                      "projections": 768}}
 
     # dataset = UnsplashDataset(tokenizer, "../data/unsplash/photos.tsv*")
-    dataset = FlickrDataset(image_folder_path="../data/flickr-dataset/Images/",
-                            caption_path="../data/flickr-dataset/captions.txt")
+    # dataset = FlickrDataset(image_folder_path="../data/flickr-dataset/Images/",
+    #                         caption_path="../data/flickr-dataset/captions.txt")
+    dataset = FlickrDataset(image_folder_path="/content/flickr-dataset/Images/",
+                            caption_path="/content/flickr-dataset/captions.txt")
     dataset_len = len(dataset)
+
     train_set, val_set, test_set = torch.utils.data.random_split(dataset, lengths=[math.floor(
         dataset_len*0.8), math.ceil(dataset_len*0.1), math.floor(dataset_len*0.1)])
+
+    # save_sets(dataset, train_set, val_set, test_set,
+    #           save_path=cfg['train']['save_sets'])
+
     save_sets(dataset, train_set, val_set, test_set,
-              save_path=cfg['train']['save_sets'])
+              save_path="/content/data")
+
     train(train_set=train_set, val_set=val_set, cfg=cfg)
 
     # cannot use FashionMNIST because size needs to be 224x224x3 at the very least

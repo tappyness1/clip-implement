@@ -21,7 +21,7 @@ def get_photos_tsv(path):
         subsets.append(pd.read_csv(filename, sep='\t', header=0))
     return pd.concat(subsets, axis=0, ignore_index=True)
 
-
+    
 class UnsplashDataset(Dataset):
     def __init__(self, tokenizer, photos_tsv_path="../data/unsplash/photos.tsv*",):
         self.photos_df = get_photos_tsv(photos_tsv_path)

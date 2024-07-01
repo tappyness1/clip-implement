@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 from torch.nn import (AdaptiveAvgPool2d, BatchNorm2d, Conv2d, ConvTranspose2d,
                       Linear, MaxPool2d, ReLU, Softmax)
-from transformers import DistilBertModel
+from transformers import DistilBertConfig, DistilBertModel
 
 
 def get_norm_embedding(img_emb, txt_emb):
@@ -44,7 +44,7 @@ class ImageEncoder(nn.Module):
         nn (_type_): _description_
     """
 
-    def __init__(self, model_name='vit_base_patch16_clip_224.openai'):
+    def __init__(self, model_name='vit_base_patch16_clip_224.openai', pretrained=True, trainable=True):
         super().__init__()
         self.model = timm.create_model(
             model_name, pretrained=True, num_classes=0, global_pool="avg"
@@ -62,6 +62,8 @@ class TextEncoder(nn.Module):
         super().__init__()
         if pretrained:
             self.model = DistilBertModel.from_pretrained(model_name)
+        else:
+            self.model = DistilBertModel(config=DistilBertConfig())
 
         for p in self.model.parameters():
             p.requires_grad = trainable

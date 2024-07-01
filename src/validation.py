@@ -57,7 +57,7 @@ def validation(model, val_set, tokenizer, cfg):
 
 if __name__ == "__main__":
 
-    from src.dataset import get_load_data
+    from src.data_processing.dataset import get_load_data
 
     cfg = {"save_model_path": "model_weights/model_weights.pt",
            'show_model_summary': False,
