@@ -68,7 +68,7 @@ class ImageSearch:
         self.final_embedding = torch.cat((torch.Tensor(subset_indices).reshape(
             (len(self.dataset), 1)), final_embedding), dim=1)
 
-    def show_images(self, prompt, img_path="/content/flickr-dataset/Images", top_k=6):
+    def show_images(self, prompt, dataset_df, img_path="/content/flickr-dataset/Images", top_k=6):
 
         tokenizer = DistilBertTokenizer.from_pretrained(
             "distilbert-base-uncased")
@@ -77,7 +77,7 @@ class ImageSearch:
             self.device), text_embedding, top_k)
         top_k_image_ids = self.final_embedding[:, 0][top_k_similar.cpu(
         ).numpy().tolist()].numpy().astype(int).tolist()
-        results = self.dataset.captions.loc[top_k_image_ids]
+        results = dataset_df.loc[top_k_image_ids]
 
         image_files = results['image'].tolist()
 
