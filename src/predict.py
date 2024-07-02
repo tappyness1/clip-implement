@@ -80,6 +80,7 @@ class ImageSearch:
         results = dataset_df.loc[top_k_image_ids]
 
         image_files = results['image'].tolist()
+        captions = results['caption'].tolist()
 
         imgs = np.zeros((1, 224, 224, 3))
         for i in range(len(image_files)):
@@ -90,6 +91,7 @@ class ImageSearch:
         imgs = imgs[1:]
         fig = px.imshow(np.array(imgs), facet_col=0, facet_col_wrap=top_k /
                         2, width=900, height=600, title=f"Prompt: {prompt}")
+        print(captions)
         fig.show()
 
 

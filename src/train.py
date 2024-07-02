@@ -18,10 +18,10 @@ def train(train_set, val_set, cfg):
 
     model.train()
 
-    optimizer = optim.Adam(model.parameters(), lr=cfg['train']['lr'], betas=(
-        0.9, 0.98), eps=1e-6, weight_decay=cfg['train']['weight_decay'])
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, 'min', patience=1)
+    optimizer = optim.Adam(model.parameters(), lr=cfg['train']['lr'], betas=(0.9, 0.98), eps=1e-6, weight_decay=cfg['train']['weight_decay'])
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 
+                                                     'min', 
+                                                     patience=1)
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -31,16 +31,27 @@ def train(train_set, val_set, cfg):
         summary(model, (3, 224, 224))
 
     if cfg['train']['train_subset']:
-        subset_indices = torch.randperm(len(train_set))[
-            :cfg['train']['train_subset']]
+        subset_indices = torch.randperm(len(train_set))[:cfg['train']['train_subset']]
         train_set = Subset(train_set, subset_indices)
 
     train_dataloader = DataLoader(
         train_set, batch_size=cfg['train']['batch_size'], shuffle=True)
 
+    num_epochs = cfg['train']['epochs']
+
+    if cfg['train']['continue_training']:
+        model_weights = torch.load(cfg['train']['weights_path'],
+                                   map_location=torch.device(device))
+        model.load_state_dict(model_weights)
+
+        # get the saved epochs and continue training from there
+        last_epoch = int(
+            cfg['train']['weights_path'].split("_")[-1].split(".")[0])
+        num_epochs -= last_epoch
+
     # dataset = cfg['dataset']['dataset']
     tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
-    for epoch in range(cfg['train']['epochs']):
+    for epoch in range(num_epochs):
         print(f"Epoch {epoch + 1}:")
         # for i in tqdm(range(X.shape[0])):
         with tqdm(train_dataloader) as tepoch:
@@ -66,9 +77,13 @@ def train(train_set, val_set, cfg):
         loss = validation(model, val_set, tokenizer, cfg)
         scheduler.step(loss)
         model.train()
+        if epoch % cfg['train']['save_checkpoint_interval'] == 0:
+            torch.save(model.state_dict(),
+                       f"{cfg['save_model_path']}-epochs-{epoch}.pt")
 
     print("training done")
-    torch.save(model.state_dict(), cfg['save_model_path'])
+    torch.save(model.state_dict(),
+               f"{cfg['save_model_path']}-epochs-{cfg['train']['epochs']}.pt")
 
     return model
 
@@ -94,12 +109,16 @@ if __name__ == "__main__":
 
     from src.data_processing.dataset import FlickrDataset
 
-    cfg = {"save_model_path": "model_weights/clip-epochs-10-partial-set.pt",
+    cfg = {"save_model_path": "model_weights/clip-weights",
            'show_model_summary': False,
-           'train': {"epochs": 10, 'lr': 5e-5,
+           'train': {"epochs": 100, 'lr': 5e-5,
                      'weight_decay': 0.2, "batch_size": 16,
-                     "train_subset": 8000, "val_subset": 400,
-                     "save_sets": "./data"},
+                     "train_subset": False, 
+                     "val_subset": 400,
+                     "save_sets": "./data",
+                     'save_checkpoint_interval': 10,
+                     'continue_training': False,
+                     'weights_path': "model_weights/model_weights_segmentation_4.pt"},
            'dataset': {"dataset": "flickr"},
            'model': {"model_name": "clip",
                      "projections": 768}}
@@ -109,6 +128,10 @@ if __name__ == "__main__":
     #                         caption_path="../data/flickr-dataset/captions.txt")
     dataset = FlickrDataset(image_folder_path="/content/flickr-dataset/Images/",
                             caption_path="/content/flickr-dataset/captions.txt")
+    
+    dataset.captions['caption'] = dataset.captions.groupby(['image'])['caption'].transform(lambda x : '. '.join(x))
+    dataset.captions = dataset.captions.drop_duplicates(subset = ['image'])
+    dataset.captions.reset_index(drop=True, inplace= True)
     dataset_len = len(dataset)
 
     train_set, val_set, test_set = torch.utils.data.random_split(dataset, lengths=[math.floor(
