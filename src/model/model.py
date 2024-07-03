@@ -84,18 +84,19 @@ class CLIP(nn.Module):
         self.img_encoder = ImageEncoder()
         self.txt_encoder = TextEncoder()
         self.projection = Projection(cfg['model']['projections'])
-        self.temperature = nn.Parameter(torch.ones(
-            []) * np.log(1 / 0.07), requires_grad=True)
+        self.temperature = nn.Parameter(torch.ones([]) * np.log(1 / 0.07), requires_grad=True)
 
     def forward(self, img, txt):
         img_features = self.img_encoder(img)
-        txt_features = self.txt_encoder(
-            txt['input_ids'], txt['attention_mask'])
+        txt_features = self.txt_encoder(txt['input_ids'], txt['attention_mask'])
         img_emb = self.projection(img_features)
         txt_emb = self.projection(txt_features)
 
         img_norm, txt_norm = get_norm_embedding(img_emb, txt_emb)
-        logits = (img_norm @ txt_norm.T) / torch.sigmoid(self.temperature)
+        # img_norm, txt_norm = img_emb.norm(dim=1, keepdim=True), txt_emb.norm(dim=1, keepdim=True)
+
+        # logits = (img_norm @ txt_norm.T) / torch.sigmoid(self.temperature)
+        logits = (img_norm @ txt_norm.T) * torch.exp(self.temperature)
 
         return img_emb, txt_emb, logits
 

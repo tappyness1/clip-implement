@@ -18,7 +18,7 @@ def train(train_set, val_set, cfg):
 
     model.train()
 
-    optimizer = optim.Adam(model.parameters(), lr=cfg['train']['lr'], betas=(0.9, 0.98), eps=1e-6, weight_decay=cfg['train']['weight_decay'])
+    optimizer = optim.AdamW(model.parameters(), lr=cfg['train']['lr'], betas=(0.9, 0.98), eps=1e-6, weight_decay=cfg['train']['weight_decay'])
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 
                                                      'min', 
                                                      patience=1)
@@ -45,13 +45,13 @@ def train(train_set, val_set, cfg):
         model.load_state_dict(model_weights)
 
         # get the saved epochs and continue training from there
-        last_epoch = int(
-            cfg['train']['weights_path'].split("_")[-1].split(".")[0])
+        last_epoch = int(cfg['train']['weights_path'].split("-")[-1].split(".")[0])
         num_epochs -= last_epoch
+    last_epoch = last_epoch if cfg['train']['continue_training'] else 0
 
     # dataset = cfg['dataset']['dataset']
     tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
-    for epoch in range(num_epochs):
+    for epoch in range(last_epoch, last_epoch + num_epochs):
         print(f"Epoch {epoch + 1}:")
         # for i in tqdm(range(X.shape[0])):
         with tqdm(train_dataloader) as tepoch:
@@ -114,11 +114,11 @@ if __name__ == "__main__":
            'train': {"epochs": 100, 'lr': 5e-5,
                      'weight_decay': 0.2, "batch_size": 16,
                      "train_subset": False, 
-                     "val_subset": 400,
+                     "val_subset": False, # other 400
                      "save_sets": "./data",
                      'save_checkpoint_interval': 10,
                      'continue_training': False,
-                     'weights_path': "model_weights/model_weights_segmentation_4.pt"},
+                     'weights_path': "model_weights/clip-weights-epochs-30.pt"},
            'dataset': {"dataset": "flickr"},
            'model': {"model_name": "clip",
                      "projections": 768}}
