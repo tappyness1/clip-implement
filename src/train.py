@@ -78,8 +78,8 @@ def train(train_set, val_set, cfg):
         scheduler.step(loss)
         model.train()
         if epoch % cfg['train']['save_checkpoint_interval'] == 0:
-            torch.save(model.state_dict(),
-                       f"{cfg['save_model_path']}-epochs-{epoch}.pt")
+            torch.save(model.state_dict(), f"{cfg['save_model_path']}-epochs-{epoch}.pt")
+            print (f"Checkpoint saved at epoch {epoch}")
 
     print("training done")
     torch.save(model.state_dict(),
@@ -116,14 +116,13 @@ if __name__ == "__main__":
                      "train_subset": False, 
                      "val_subset": False, # other 400
                      "save_sets": "./data",
-                     'save_checkpoint_interval': 10,
-                     'continue_training': False,
-                     'weights_path': "model_weights/clip-weights-epochs-30.pt"},
+                     'save_checkpoint_interval': 5,
+                     'continue_training': True,
+                     'weights_path': "model_weights/clip-weights-epochs-35.pt"},
            'dataset': {"dataset": "flickr"},
            'model': {"model_name": "clip",
                      "projections": 768}}
 
-    # dataset = UnsplashDataset(tokenizer, "../data/unsplash/photos.tsv*")
     # dataset = FlickrDataset(image_folder_path="../data/flickr-dataset/Images/",
     #                         caption_path="../data/flickr-dataset/captions.txt")
     dataset = FlickrDataset(image_folder_path="/content/flickr-dataset/Images/",

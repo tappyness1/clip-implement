@@ -101,6 +101,7 @@ class CLIP(nn.Module):
         return img_emb, txt_emb, logits
 
 
+
 if __name__ == "__main__":
 
     from torch.utils.data import DataLoader

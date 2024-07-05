@@ -7,3 +7,5 @@ outputs
 multirun
 model_weights/*.pt
 *.csv
+data/*.pt
+tryout_model.ipynb
